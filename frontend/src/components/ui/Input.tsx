@@ -6,7 +6,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 const Input = ({ label, ...rest }: InputProps) => {
     return (
-        <div>
+        <div className='w-full'>
             {label && (
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                     {label}
@@ -14,7 +14,14 @@ const Input = ({ label, ...rest }: InputProps) => {
             )}
             <input
                 {...rest}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="      w-full h-11
+          px-4
+          border border-gray-300
+          rounded-lg
+          focus:ring-2 focus:ring-indigo-500
+          focus:border-transparent
+          outline-none
+          transition-all"
             />
         </div>
     );

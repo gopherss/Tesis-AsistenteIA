@@ -3,12 +3,14 @@ export interface LoginCredentials {
   password: string;
 }
 
+type UserRole = 'DIRECTOR' | 'DOCENTE';
+
 export interface RegisterDocenteData {
   email: string;
   password: string;
   nombre: string;
   apellido: string;
-  rol: string;
+  rol: UserRole;
 }
 
 export interface Usuario {
@@ -16,7 +18,7 @@ export interface Usuario {
   email: string;
   nombre: string;
   apellido: string;
-  rol: string;
+  rol: UserRole;
   created_at?: string;
 }
 
@@ -27,7 +29,7 @@ export interface TokenResponse {
 
 export interface DashboardData {
   mensaje: string;
-  rol: string;
+  rol: UserRole;
   estadisticas: {
     total_docentes: number;
     total_cursos: number;

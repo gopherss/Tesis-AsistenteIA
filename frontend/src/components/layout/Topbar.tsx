@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useAuthStore } from "../../store/auth.store";
 import { useDocenteStore } from "../../store/docente.store";
+import { Button, Input } from "../index";
+import UserMenu from "../ui/UserMenu";
 
-export const Topbar = () => {
+const Topbar = () => {
   const { user } = useAuthStore();
   const { chat, iniciarChat, enviarMensaje } = useDocenteStore();
 
   const [openChat, setOpenChat] = useState(false);
   const [mensaje, setMensaje] = useState("");
-
   const [step, setStep] = useState(1);
 
   const [contexto, setContexto] = useState({
@@ -18,9 +19,6 @@ export const Topbar = () => {
     tema: "",
   });
 
-  // ==========================================
-  // ABRIR CHAT
-  // ==========================================
   const abrirChat = async () => {
     setOpenChat(true);
 
@@ -29,52 +27,41 @@ export const Topbar = () => {
     }
   };
 
-  // ==========================================
-  // SELECCION TAGS
-  // ==========================================
   const seleccionar = (valor: string) => {
-    // NIVEL
     if (step === 1) {
-      setContexto({
-        ...contexto,
+      setContexto((prev) => ({
+        ...prev,
         nivel: valor,
-      });
-
+      }));
       setStep(2);
       return;
     }
 
-    // GRADO
     if (step === 2) {
-      setContexto({
-        ...contexto,
+      setContexto((prev) => ({
+        ...prev,
         grado: valor,
-      });
-
+      }));
       setStep(3);
       return;
     }
   };
 
-  // ==========================================
-  // ENVIAR MENSAJE
-  // ==========================================
   const enviar = async () => {
     if (!mensaje.trim()) return;
 
-    // PASO 3 = CURSO
     if (step === 3) {
-      setContexto({
-        ...contexto,
+      setContexto((prev) => ({
+        ...prev,
         curso: mensaje,
-      });
+      }));
 
       setMensaje("");
       setStep(4);
       return;
     }
 
-    // PASO 4 = TEMA
+    // TEMA
     if (step === 4) {
       const nuevo = {
         ...contexto,
@@ -99,14 +86,10 @@ Ayúdame con este tema.
       return;
     }
 
-    // CHAT NORMAL
     await enviarMensaje(mensaje);
     setMensaje("");
   };
 
-  // ==========================================
-  // TAGS DINAMICOS
-  // ==========================================
   const renderTags = () => {
     if (step === 1) {
       return ["Inicial", "Primaria", "Secundaria"];
@@ -129,9 +112,6 @@ Ayúdame con este tema.
     return [];
   };
 
-  // ==========================================
-  // TEXTO GUIA
-  // ==========================================
   const textoPaso = () => {
     if (step === 1) return "Selecciona tu nivel";
     if (step === 2) return "Selecciona tu grado";
@@ -143,23 +123,23 @@ Ayúdame con este tema.
   return (
     <>
       {/* TOPBAR */}
-      <header className="h-16 bg-white border-b flex items-center justify-between px-6">
-        <input
-          placeholder="Buscar sesiones..."
-          className="border rounded-xl px-4 py-2 w-96"
-        />
+      <header className="h-16 bg-white border-b flex items-center justify-between px-6 gap-4">
+        <div className="w-96">
+          <Input placeholder="Buscar sesiones..." />
+        </div>
 
         <div className="flex items-center gap-4">
-          <button
+          {
+            user?.rol === "DOCENTE" && (
+                        <Button
+            label="Generar con IA"
+            color="primary"
             onClick={abrirChat}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-xl"
-          >
-            Generar con IA
-          </button>
+          /> )
 
-          <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
-            {user?.nombre?.charAt(0)}
-          </div>
+          }
+
+          <UserMenu/>
         </div>
       </header>
 
@@ -185,7 +165,7 @@ Ayúdame con este tema.
                 onClick={() => setOpenChat(false)}
                 className="text-gray-500 text-xl"
               >
-                ×
+                x
               </button>
             </div>
 
@@ -205,25 +185,22 @@ Ayúdame con este tema.
                 </div>
               ))}
 
-              {/* PASOS GUIADOS */}
+              {/* PASOS */}
               {step <= 4 && (
                 <div className="space-y-3">
-
                   <p className="text-sm text-gray-500">
                     {textoPaso()}
                   </p>
 
-                  {/* TAGS */}
                   {step <= 2 && (
                     <div className="flex flex-wrap gap-2">
                       {renderTags().map((tag) => (
-                        <button
+                        <Button
                           key={tag}
+                          label={tag}
+                          color="secondary"
                           onClick={() => seleccionar(tag)}
-                          className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm hover:bg-blue-200"
-                        >
-                          {tag}
-                        </button>
+                        />
                       ))}
                     </div>
                   )}
@@ -231,31 +208,32 @@ Ayúdame con este tema.
               )}
             </div>
 
-            {/* INPUT */}
-            <div className="p-4 border-t flex gap-2">
-              <input
-                value={mensaje}
-                onChange={(e) => setMensaje(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") enviar();
-                }}
-                placeholder={
-                  step === 3
-                    ? "Ej: Matemática"
-                    : step === 4
-                    ? "Ej: Fracciones equivalentes"
-                    : "Escribe tu mensaje..."
-                }
-                className="flex-1 border rounded-xl px-4 py-2"
-              />
+            {/* INPUT CHAT */}
+            <div className="p-4 border-t flex gap-2 items-end">
 
-              <button
+              <div className="flex-1">
+                <Input
+                  value={mensaje}
+                  onChange={(e) => setMensaje(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") enviar();
+                  }}
+                  placeholder={
+                    step === 3
+                      ? "Ej: Matemática"
+                      : step === 4
+                      ? "Ej: Fracciones equivalentes"
+                      : "Escribe tu mensaje..."
+                  }
+                />
+              </div>
+
+              <Button
+                label="Enviar"
+                color="primary"
                 onClick={enviar}
                 disabled={!mensaje.trim() && step >= 3}
-                className="bg-blue-600 text-white px-4 rounded-xl disabled:opacity-50"
-              >
-                Enviar
-              </button>
+              />
             </div>
 
           </div>
@@ -264,3 +242,5 @@ Ayúdame con este tema.
     </>
   );
 };
+
+export default Topbar;

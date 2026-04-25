@@ -6,7 +6,6 @@ const Sidebar = () => {
 
   const docenteMenu = [
     { name: "Panel", path: "/dashboard-docente" },
-    { name: "Planificación", path: "/planificacion" },
     { name: "Sesiones", path: "/sesiones" },
     { name: "Estudiantes", path: "/estudiantes" },
   ];

@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
-import Input from './ui/Input';
-import Button from './ui/Button';
+import { Button, Input } from '../components';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -57,6 +56,7 @@ const LoginForm = () => {
             label={isLoading ? 'Iniciando...' : 'Iniciar Sesión'}
             color="primary"
             disabled={isLoading}
+            full
           />
         </form>
       </div>

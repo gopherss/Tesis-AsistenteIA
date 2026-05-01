@@ -78,27 +78,23 @@ const RegisterDocenteForm = () => {
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Nombre"
-            // required
             value={formData.nombre}
             onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
           />
           <Input
             label="Apellido"
-            // required
             value={formData.apellido}
             onChange={(e) => setFormData({ ...formData, apellido: e.target.value })}
           />
           <Input
             label="Email"
             type="email"
-            // required
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
           />
           <Input
             label="Contraseña"
             type="password"
-            // required
             value={formData.password}
             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
           />

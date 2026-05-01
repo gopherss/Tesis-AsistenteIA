@@ -1,14 +1,29 @@
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from database import engine, Base
-from routes import router as auth_router
-from routes_docente import router as docente_router
+from database.db import engine, Base
+from routes.auth import router as auth_router
+from routes.sesion import router as sesion_router
+from routes.sesiones import router as sesiones_router
+from routes.curriculum import router as curriculum_router
+from models.user import Usuario, RolEnum
+from models.sesion import Sesion
+from models.curriculum import (
+    Nivel,
+    Grado,
+    Area,
+    Competencia,
+    Capacidad,
+    Tema,
+    Desempeno
+)
 
+load_dotenv()
 
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="Sistema Educativo IA - Trujillo",
+    title="Sistema Educativo IA",
     version="0.1.0",
 )
 
@@ -21,4 +36,6 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
-app.include_router(docente_router)
+app.include_router(sesion_router)
+app.include_router(sesiones_router)
+app.include_router(curriculum_router)

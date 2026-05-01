@@ -7,7 +7,6 @@ const api = axios.create({
   },
 });
 
-// Interceptor para añadir token
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('access_token');
@@ -21,7 +20,6 @@ api.interceptors.request.use(
   }
 );
 
-// Interceptor para manejar errores 401
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -35,4 +33,3 @@ api.interceptors.response.use(
 );
 
 export default api;
-

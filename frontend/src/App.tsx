@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { Toaster } from 'sonner';
-import { useAuthStore } from './store/auth.store';
-import ProtectedRoute from './routes/ProtectedRoute';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { Toaster } from 'sonner';
 import DirectorDashboard, { DocenteDashboard, LoginForm, RegisterDocenteForm } from './pages';
 import Sesiones from './pages/Sesiones';
-import Estudiantes from './pages/Estudiantes';
+import ProtectedRoute from './routes/ProtectedRoute';
+import { useAuthStore } from './store/auth.store';
 
 const App = () => {
   const { loadUser } = useAuthStore();
@@ -50,14 +49,6 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={['DOCENTE']}>
               <Sesiones/>
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path='/estudiantes'
-          element={
-            <ProtectedRoute allowedRoles={['DOCENTE']}>
-              <Estudiantes/>
             </ProtectedRoute>
           }
         />

@@ -10,13 +10,11 @@ const UserMenu = () => {
   const [openMenu, setOpenMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // CERRAR SESIÓN
   const handleLogout = async () => {
     await logout();
     navigate("/login");
   };
 
-  // CERRAR MENÚ SI HACE CLICK FUERA
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -48,7 +46,6 @@ const UserMenu = () => {
         {user?.nombre?.charAt(0)}
       </button>
 
-      {/* MENÚ */}
       {openMenu && (
         <div className="absolute right-0 mt-2 w-56 bg-white border rounded-xl shadow-xl p-3 z-50">
 

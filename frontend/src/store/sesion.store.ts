@@ -17,7 +17,7 @@ interface SesionState {
   regenerarSesionIA: (id: number) => Promise<void>;
 }
 
-export const useSesionStore =
+const useSesionStore =
   create<SesionState>((set) => ({
     sesiones: [],
     isLoading: false,
@@ -113,3 +113,5 @@ export const useSesionStore =
       }
     },
   }));
+
+export default useSesionStore;

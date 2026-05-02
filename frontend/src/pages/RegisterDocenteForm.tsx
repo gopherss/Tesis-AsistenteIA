@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { useAuthStore } from '../store/auth.store';
-import Input from '../components/ui/Input';
-import Button from '../components/ui/Button';
-import DashboardLayout from '../components/layout/DashboardLayout';
-import type { RegisterDocenteData } from '../types/auth.types';
 import { toast } from 'sonner';
+import { useAuthStore } from '../store';
+import { Button, DashboardLayout, Input } from '../components';
+import type { RegisterDocenteData } from '../types/auth.types';
 
 const RegisterDocenteForm = () => {
   const { registerDocente, isLoading } = useAuthStore();
@@ -26,23 +24,13 @@ const RegisterDocenteForm = () => {
     const email = formData.email.trim().toLowerCase();
     const password = formData.password.trim();
 
-    if (!nombre) {
-      toast.warning("Ingrese el nombre");
-      return;
-    }
-
-    if (!apellido) {
-      toast.warning("Ingrese el apellido");
+    if (!nombre || !apellido || !password) {
+      toast.warning("El Todos Los Campos");
       return;
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       toast.warning("Ingrese un correo válido");
-      return;
-    }
-
-    if (!password) {
-      toast.warning("Ingrese una contraseña");
       return;
     }
 

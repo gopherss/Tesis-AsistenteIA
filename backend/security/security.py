@@ -51,11 +51,3 @@ async def get_director_user(
         raise HTTPException(status_code=403, detail="Solo directores pueden realizar esta acción")
     return current_user
 
-
-async def get_docente_user(
-    current_user: Usuario = Depends(get_current_user)
-) -> Usuario:
-    if current_user.rol.value != RolEnum.DOCENTE:
-        raise HTTPException(status_code=403, detail="Solo docentes pueden realizar esta acción")
-    return current_user
-

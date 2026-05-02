@@ -1,35 +1,31 @@
 import { useEffect } from "react";
-import { DashboardLayout, LoadingSpinner } from "../components";
-import SesionCard from "../components/layout/SesionCard";
-import { useAuthStore } from "../store/auth.store";
-import { useSesionStore } from "../store/sesion.store";
+import { DashboardLayout, LoadingSpinner, SesionCard } from "../components";
+import { useSesionStore } from "../store";
 
 const DocenteDashboard = () => {
-  const { user } = useAuthStore();
   const {
     sesiones,
+    isLoading,
     listarSesiones,
     eliminarSesion,
     regenerarSesionIA,
-    isLoading
   } = useSesionStore();
 
   useEffect(() => {
     listarSesiones();
-  }, [listarSesiones]);
+  }, []);
 
-  if (sesiones.length < 0) return <h1 className="text-center text-red-500 ">No Hay Sesiones Creadas</h1>
-
-  if (isLoading) return <LoadingSpinner fullScreen text="cargando" size="md" />
+  if (isLoading) return (
+    <DashboardLayout>
+      <LoadingSpinner fullScreen text="cargando" size="sm" />
+    </DashboardLayout>
+  )
 
   return (
     <DashboardLayout>
       <div className="min-h-screen bg-gray-100">
-        <nav className="bg-white shadow-sm">
-          <h1>{user?.nombre}</h1>
-        </nav>
         <div className="mt-8">
-          <h3 className="text-xl font-semibold">Mis sesiones</h3>
+          <h3 className="text-xl font-semibold text-red-400 m-2">Mis sesiones</h3>
           <div className="columns-1 md:columns-2 gap-6 mt-4 space-y-6">
             {sesiones.map((s) => (
               <SesionCard

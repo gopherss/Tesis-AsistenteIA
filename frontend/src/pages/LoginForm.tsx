@@ -1,7 +1,8 @@
+import { EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthStore } from '../store/auth.store';
 import { Button, Input } from '../components';
+import { useAuthStore } from '../store';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -11,6 +12,8 @@ const LoginForm = () => {
     password: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const success = await login(formData);
@@ -19,7 +22,6 @@ const LoginForm = () => {
       if (user?.rol === 'DIRECTOR') {
         navigate('/dashboard-director');
       }
-      
       if (user?.rol === 'DOCENTE') {
         navigate('/dashboard-docente');
       }
@@ -43,14 +45,25 @@ const LoginForm = () => {
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             placeholder="correo@ejemplo.com"
           />
-          <Input
-            label="Contraseña"
-            type="password"
-            required
-            value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-            placeholder="••••••••"
-          />
+          <div className="relative">
+            <Input
+              label="Contraseña"
+              type={showPassword ? 'text' : 'password'}
+              required
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+              placeholder="••••••••••••••••"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-9 text-sm text-blue-600"
+            >
+              {showPassword ? <EyeOffIcon/> : <EyeIcon/>}
+            </button>
+          </div>
           <Button
             type="submit"
             label={isLoading ? 'Iniciando...' : 'Iniciar Sesión'}

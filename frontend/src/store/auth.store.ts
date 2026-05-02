@@ -15,7 +15,7 @@ interface AuthState {
   clearAuth: () => void;
 }
 
-export const useAuthStore = create<AuthState>()(
+const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
       user: null,
@@ -103,3 +103,5 @@ export const useAuthStore = create<AuthState>()(
     }
   )
 );
+
+export default useAuthStore;

@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import DirectorDashboard, { DocenteDashboard, LoginForm, RegisterDocenteForm } from './pages';
-import Sesiones from './pages/Sesiones';
+import  { DirectorDashboard, DocenteDashboard, LoginForm, RegisterDocenteForm, Sesiones } from './pages';
 import ProtectedRoute from './routes/ProtectedRoute';
-import { useAuthStore } from './store/auth.store';
+import { useAuthStore } from './store';
 
 const App = () => {
   const { loadUser } = useAuthStore();

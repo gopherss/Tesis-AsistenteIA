@@ -26,3 +26,4 @@ def listar_temas(
         Tema.area_id == area_id,
         Tema.grado_id == grado_id
     ).all()
+

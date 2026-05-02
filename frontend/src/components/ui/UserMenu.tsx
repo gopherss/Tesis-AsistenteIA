@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../../store/auth.store";
 import { Button } from "../index";
+import { useAuthStore } from "../../store";
 
 const UserMenu = () => {
   const { user, logout } = useAuthStore();

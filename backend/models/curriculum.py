@@ -109,3 +109,4 @@ class Desempeno(Base):
     tema_id = Column(Integer, ForeignKey("temas.id"))
 
     tema = relationship("Tema", back_populates="desempenos")
+    

@@ -11,7 +11,7 @@ interface CurriculumState {
   cargarTemas: (areaId: number, gradoId: number) => Promise<void>;
 }
 
-export const useCurriculumStore = create<CurriculumState>((set) => ({
+const useCurriculumStore = create<CurriculumState>((set) => ({
   areas: [],
   grados: [],
   temas: [],
@@ -31,3 +31,5 @@ export const useCurriculumStore = create<CurriculumState>((set) => ({
     set({ temas: data });
   }
 }));
+
+export default useCurriculumStore;

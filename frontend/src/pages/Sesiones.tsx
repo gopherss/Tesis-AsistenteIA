@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import DashboardLayout from "../components/layout/DashboardLayout";
-import { Button, Input, Select } from "../components";
-import { useSesionStore } from "../store/sesion.store";
-import { useCurriculumStore } from "../store/curriculum.store";
+import { Button, DashboardLayout, Input, Select } from "../components";
+import { useCurriculumStore, useSesionStore } from "../store";
 
 const Sesiones = () => {
   const { crearSesion, isLoading } = useSesionStore();
@@ -135,8 +133,7 @@ const Sesiones = () => {
 
   return (
     <DashboardLayout>
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        {/* Header */}
+      <div className="max-w-5xl mx-auto px-4">
         <div className="mb-2">
           <h1 className="text-2xl font-bold text-slate-800">
             Crear Sesión Inteligente

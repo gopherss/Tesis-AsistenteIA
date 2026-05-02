@@ -3,7 +3,6 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from database.db import SessionLocal, Base, engine
 from models.user import Usuario, RolEnum
-from models.sesion import Sesion   # IMPORTANTE
 from security.security import hash_password
 
 # Crear las tablas si no existen

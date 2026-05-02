@@ -1,5 +1,5 @@
 import { DashboardLayout } from '../components';
-import { useAuthStore } from '../store/auth.store';
+import { useAuthStore } from '../store';
 
 const DirectorDashboard = () => {
   const { user } = useAuthStore();

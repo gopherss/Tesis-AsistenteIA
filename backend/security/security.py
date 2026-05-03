@@ -50,4 +50,3 @@ async def get_director_user(
     if current_user.rol.value != RolEnum.DIRECTOR:
         raise HTTPException(status_code=403, detail="Solo directores pueden realizar esta acción")
     return current_user
-

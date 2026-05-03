@@ -29,4 +29,30 @@ export const sesionService = {
     );
     return res.data;
   },
+
+  descargarPdfSesion: async (id: number): Promise<void> => {
+    const res = await api.get(
+      `/sesiones/${id}/descargar-pdf`,
+      {
+        responseType: "blob",
+      }
+    );
+
+    // Crear un blob y descargarlo
+    const url = window.URL.createObjectURL(
+      new Blob([res.data])
+    );
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute(
+      "download",
+      `sesion_${id}.pdf`
+    );
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode?.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  },
 };
+
+export const descargarPdfSesion = sesionService.descargarPdfSesion;

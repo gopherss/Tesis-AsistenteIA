@@ -1,9 +1,3 @@
-# ==========================================
-# seed_curriculum.py
-# Seeder Profesional Perú Primaria
-# FastAPI + SQLAlchemy + PostgreSQL
-# ==========================================
-
 from database.db import SessionLocal
 from models.curriculum import (
     Nivel,
@@ -177,7 +171,6 @@ def seed_temas():
                 )
 
     db.commit()
-
 
 def run():
     print("🌱 Iniciando Seeder...")

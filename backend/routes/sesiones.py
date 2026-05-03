@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from database.db import get_db
 from models.sesion import Sesion
@@ -7,6 +8,7 @@ from schemas.sesion import SesionCreate, SesionResponse
 from security.security import get_current_user
 from services.ia_service import generar_sesion_ia
 from services.validator_service import validar_sesion
+from services.pdf_service import generar_pdf_sesion
 
 router = APIRouter(
     prefix="/sesiones",
@@ -23,13 +25,7 @@ def crear_sesion(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    """
-    Crear nueva sesión pedagógica con validación inteligente + IA
-    """
 
-    # -----------------------------------------
-    # 1. Validación inteligente
-    # -----------------------------------------
     resultado = validar_sesion(
         area=datos.area,
         tema=datos.tema
@@ -41,12 +37,7 @@ def crear_sesion(
             detail=resultado
         )
 
-    # Tema corregido automáticamente
     datos.tema = resultado["tema_corregido"]
-
-    # -----------------------------------------
-    # 2. Generación IA
-    # -----------------------------------------
     try:
         contenido_generado = generar_sesion_ia(datos)
     except Exception:
@@ -55,9 +46,6 @@ def crear_sesion(
             "en este momento."
         )
 
-    # -----------------------------------------
-    # 3. Guardado BD
-    # -----------------------------------------
     nueva_sesion = Sesion(
         titulo=datos.titulo,
         proposito=datos.proposito,
@@ -88,10 +76,6 @@ def listar_sesiones(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    """
-    Lista solo las sesiones del docente autenticado
-    """
-
     sesiones = (
         db.query(Sesion)
         .filter(Sesion.usuario_id == current_user.id)
@@ -110,10 +94,7 @@ def obtener_sesion(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    """
-    Obtener una sesión específica del usuario
-    """
-
+    
     sesion = (
         db.query(Sesion)
         .filter(
@@ -140,10 +121,7 @@ def eliminar_sesion(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    """
-    Elimina una sesión del docente
-    """
-
+    
     sesion = (
         db.query(Sesion)
         .filter(
@@ -175,9 +153,6 @@ def regenerar_contenido_ia(
     db: Session = Depends(get_db),
     current_user: Usuario = Depends(get_current_user)
 ):
-    """
-    Regenera contenido IA de una sesión existente
-    """
 
     sesion = (
         db.query(Sesion)
@@ -215,4 +190,43 @@ def regenerar_contenido_ia(
     db.commit()
     db.refresh(sesion)
 
-    return sesion   
+    return sesion
+
+
+@router.get("/{sesion_id}/descargar-pdf")
+def descargar_pdf_sesion(
+    sesion_id: int,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    
+    sesion = (
+        db.query(Sesion)
+        .filter(
+            Sesion.id == sesion_id,
+            Sesion.usuario_id == current_user.id
+        )
+        .first()
+    )
+
+    if not sesion:
+        raise HTTPException(
+            status_code=404,
+            detail="Sesión no encontrada"
+        )
+
+    try:
+        pdf_buffer = generar_pdf_sesion(sesion)
+        
+        return StreamingResponse(
+            iter([pdf_buffer.getvalue()]),
+            media_type="application/pdf",
+            headers={
+                "Content-Disposition": f"attachment; filename=sesion_{sesion.id}_{sesion.titulo.replace(' ', '_')}.pdf"
+            }
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error al generar el PDF: {str(e)}"
+        )

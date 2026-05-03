@@ -1,6 +1,5 @@
 import ollama
 
-
 def generar_sesion_ia(datos):
     minutos_desarrollo = max(datos.tiempo_sesion - 20, 20)
 

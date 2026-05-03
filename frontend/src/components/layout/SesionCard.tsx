@@ -7,10 +7,12 @@ import {
   RefreshCcw,
   ChevronDown,
   ChevronUp,
+  Download,
 } from "lucide-react";
 
 import type { SesionResponse } from "../../types/sesion.types";
 import { motion, AnimatePresence } from "framer-motion";
+import { descargarPdfSesion } from "../../services/sesion.service";
 
 interface Props {
   sesion: SesionResponse & {
@@ -41,6 +43,18 @@ const SesionCard = ({
   onRegenerar,
 }: Props) => {
   const [open, setOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDescargarPDF = async () => {
+    setIsDownloading(true);
+    try {
+      await descargarPdfSesion(sesion.id);
+    } catch (error) {
+      console.error("Error al descargar PDF:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden">
@@ -198,6 +212,15 @@ const SesionCard = ({
 
       {/* Footer */}
       <div className="px-6 py-4 border-t bg-slate-50 flex flex-wrap gap-2">
+        <button
+          className="px-4 py-2 rounded-xl border text-sm font-medium hover:bg-blue-50 flex items-center gap-2 text-blue-600"
+          onClick={handleDescargarPDF}
+          disabled={isDownloading}
+        >
+          <Download size={16} />
+          {isDownloading ? "Descargando..." : "Descargar PDF"}
+        </button>
+
         <button
           className="px-4 py-2 rounded-xl border text-sm font-medium hover:bg-white flex items-center gap-2"
           onClick={() => onRegenerar?.(sesion.id)}

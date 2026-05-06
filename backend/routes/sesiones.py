@@ -179,12 +179,20 @@ def regenerar_contenido_ia(
             tiempo_sesion = sesion.tiempo_sesion
             numero_ejercicios = sesion.numero_ejercicios
 
-        sesion.contenido_ia = generar_sesion_ia(FakeData())
+        sesion.contenido_ia = generar_sesion_ia(FakeData()) or ""
 
-    except Exception:
+    except Exception as e:
+        error_msg = str(e)
+
+        if "Insufficient Balance" in error_msg:
+            raise HTTPException(
+                status_code=402,
+                detail="Saldo insuficiente en la API de IA"
+            )
+
         raise HTTPException(
             status_code=500,
-            detail="No se pudo regenerar IA"
+            detail=f"Error IA: {error_msg}"
         )
 
     db.commit()

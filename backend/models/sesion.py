@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped, mapped_column
 from database.db import Base
 
 class Sesion(Base):
@@ -17,7 +17,7 @@ class Sesion(Base):
     numero_ejercicios = Column(Integer, default=0)
     tiempo_sesion = Column(Integer, default=0)  # minutos
 
-    contenido_ia = Column(Text)
+    contenido_ia: Mapped[str] = mapped_column(Text, default="")
 
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     usuario = relationship("Usuario", back_populates="sesiones")

@@ -8,7 +8,7 @@ const DirectorDashboard = () => {
     <DashboardLayout>
       <div className="min-h-screen bg-gray-50">
         <nav className="bg-white shadow-sm">
-          <h1>Bienvenido {user?.nombre}</h1>
+          <h1 className='text-cyan-500 text-center'>Bienvenido {user?.nombre}</h1>
         </nav>
       </div>
     </DashboardLayout>

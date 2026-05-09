@@ -170,7 +170,7 @@ def regenerar_contenido_ia(
         )
 
     try:
-        class FakeData:
+        class Data:
             titulo = sesion.titulo
             proposito = sesion.proposito
             grado = sesion.grado
@@ -179,7 +179,7 @@ def regenerar_contenido_ia(
             tiempo_sesion = sesion.tiempo_sesion
             numero_ejercicios = sesion.numero_ejercicios
 
-        sesion.contenido_ia = generar_sesion_ia(FakeData()) or ""
+        sesion.contenido_ia = generar_sesion_ia(Data()) or ""
 
     except Exception as e:
         error_msg = str(e)

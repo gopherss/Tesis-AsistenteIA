@@ -1,8 +1,10 @@
+import { useNavigate } from "react-router-dom";
+import { useCurriculumStore, useSesionStore } from "../store";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button, DashboardLayout, Input, Select } from "../components";
-import { useCurriculumStore, useSesionStore } from "../store";
 
 const Sesiones = () => {
+  const navigate = useNavigate();
   const { crearSesion, isLoading } = useSesionStore();
 
   const {
@@ -28,7 +30,6 @@ const Sesiones = () => {
     tiempo_sesion: 60,
   });
 
-
   useEffect(() => {
     cargarAreas();
     cargarGrados();
@@ -43,7 +44,6 @@ const Sesiones = () => {
     }
   }, [formData.area_id, formData.grado_id]);
 
-
   const selectedArea = useMemo(() => {
     return areas.find(
       (a: any) => String(a.id) === formData.area_id
@@ -55,7 +55,6 @@ const Sesiones = () => {
       (g: any) => String(g.id) === formData.grado_id
     );
   }, [grados, formData.grado_id]);
-
 
   const handleChange = (
     field: string,
@@ -125,7 +124,11 @@ const Sesiones = () => {
         ),
       });
 
-      if (ok) resetForm();
+      if (ok) {
+        resetForm();
+        // Redirecciona al dashboard del docente después de crear la sesión
+        navigate("/dashboard-docente");
+      }
     } finally {
       isSubmittingRef.current = false;
     }
@@ -140,44 +143,35 @@ const Sesiones = () => {
           </h1>
         </div>
 
-        {/* Card */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white rounded-3xl shadow-xl border border-slate-200 p-8 space-y-8"
+          className="bg-white rounded-3xl shadow-xl border border-slate-200 p-4 sm:p-6 md:p-8 space-y-8"
         >
-
+          {/* Resto de tu formulario igual... */}
           <section className="space-y-5">
-            <h2 className="text-lg font-semibold text-slate-700">
+            <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">
               Información General
             </h2>
-
-            <Input
-              label="Título"
-              placeholder="Se genera automáticamente"
-              value={formData.titulo}
-              onChange={(e) =>
-                handleChange(
-                  "titulo",
-                  e.target.value
-                )
-              }
-            />
-
-            <Input
-              label="Propósito"
-              placeholder="¿Qué aprenderán hoy?"
-              value={formData.proposito}
-              onChange={(e) =>
-                handleChange(
-                  "proposito",
-                  e.target.value
-                )
-              }
-            />
+            <div className="grid md:grid-cols-2 gap-5">
+              <Input
+                label="Título"
+                placeholder="Se genera automáticamente"
+                value={formData.titulo}
+                onChange={(e) => handleChange("titulo", e.target.value)}
+                disabled
+              />
+              <Input
+                label="Propósito"
+                placeholder="¿Qué aprenderán hoy?"
+                value={formData.proposito}
+                onChange={(e) => handleChange("proposito", e.target.value)}
+              />
+            </div>
           </section>
 
+          {/* Datos Curriculares */}
           <section className="space-y-5">
-            <h2 className="text-lg font-semibold text-slate-700">
+            <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">
               Datos Curriculares
             </h2>
 
@@ -219,77 +213,59 @@ const Sesiones = () => {
               />
             </div>
 
-            {/* Tema */}
             <div>
               <Input
                 label="Tema"
                 placeholder="Escribe o selecciona sugerencia"
                 value={formData.tema}
-                onChange={(e) =>
-                  handleTemaChange(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => handleTemaChange(e.target.value)}
               />
 
               {temas.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {temas.map((t: any) => (
-                    <Button
+                    <button
                       key={t.id}
                       type="button"
-                      label={t.nombre}
-                      color={
-                        formData.tema === t.nombre
-                          ? "primary"
-                          : "secondary"
-                      }
-                      onClick={() =>
-                        handleTemaChange(
-                          t.nombre
-                        )
-                      }
-                    />
+                      onClick={() => handleTemaChange(t.nombre)}
+                      className={`px-3 py-1.5 rounded-lg text-sm font-medium transition ${formData.tema === t.nombre
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        }`}
+                    >
+                      {t.nombre}
+                    </button>
                   ))}
                 </div>
               )}
             </div>
           </section>
 
- 
+          {/* Información Pedagógica */}
           <section className="space-y-5">
-            <h2 className="text-lg font-semibold text-slate-700">
+            <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">
               Información Pedagógica
             </h2>
 
-            <Input
-              label="Capacidades"
-              placeholder="Separadas por coma"
-              value={formData.capacidades}
-              onChange={(e) =>
-                handleChange(
-                  "capacidades",
-                  e.target.value
-                )
-              }
-            />
-
-            <Input
-              label="Desempeño"
-              placeholder="Separado por coma"
-              value={formData.desempeno}
-              onChange={(e) =>
-                handleChange(
-                  "desempeno",
-                  e.target.value
-                )
-              }
-            />
+            <div className="grid md:grid-cols-2 gap-5">
+              <Input
+                label="Capacidades"
+                placeholder="Separadas por coma"
+                value={formData.capacidades}
+                onChange={(e) => handleChange("capacidades", e.target.value)}
+              />
+              <Input
+                label="Desempeño"
+                placeholder="Separado por coma"
+                value={formData.desempeno}
+                onChange={(e) => handleChange("desempeno", e.target.value)}
+              />
+            </div>
           </section>
 
-
+          {/* Configuración */}
           <section className="space-y-5">
-            <h2 className="text-lg font-semibold text-slate-700">
+            <h2 className="text-lg font-semibold text-slate-700 border-b pb-2">
               Configuración
             </h2>
 
@@ -298,49 +274,28 @@ const Sesiones = () => {
                 label="Ejercicios"
                 type="number"
                 min={1}
-                value={
-                  formData.numero_ejercicios
-                }
+                value={formData.numero_ejercicios}
                 onChange={(e) =>
-                  handleChange(
-                    "numero_ejercicios",
-                    Number(
-                      e.target.value
-                    )
-                  )
+                  handleChange("numero_ejercicios", Number(e.target.value))
                 }
               />
-
               <Input
                 label="Tiempo (min)"
                 type="number"
                 min={10}
-                value={
-                  formData.tiempo_sesion
-                }
-                onChange={(e) =>
-                  handleChange(
-                    "tiempo_sesion",
-                    Number(
-                      e.target.value
-                    )
-                  )
-                }
+                value={formData.tiempo_sesion}
+                onChange={(e) => handleChange("tiempo_sesion", Number(e.target.value))}
               />
             </div>
           </section>
 
           <Button
             type="submit"
-            full
-            color="primary"
             disabled={isLoading}
-            label={
-              isLoading
-                ? "Generando sesión..."
-                : "Crear Sesión"
-            }
-          />
+            label={isLoading ? "Generando sesión..." : "Crear Sesión"}
+            color="primary"
+            full
+          />          
         </form>
       </div>
     </DashboardLayout>

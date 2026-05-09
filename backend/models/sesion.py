@@ -11,13 +11,14 @@ class Sesion(Base):
     grado = Column(String, nullable=False)
     area = Column(String, nullable=False)
     tema = Column(String, nullable=False)
-    competencias = Column(Text)   # puedes guardar como JSON string
+    competencias = Column(Text) 
     capacidades = Column(Text)
     desempeno = Column(Text)
     numero_ejercicios = Column(Integer, default=0)
-    tiempo_sesion = Column(Integer, default=0)  # minutos
+    tiempo_sesion = Column(Integer, default=0) 
 
     contenido_ia: Mapped[str] = mapped_column(Text, default="")
 
     usuario_id = Column(Integer, ForeignKey("usuarios.id"))
     usuario = relationship("Usuario", back_populates="sesiones")
+

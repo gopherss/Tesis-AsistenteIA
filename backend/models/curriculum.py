@@ -1,16 +1,8 @@
-# ==========================================
 # models/curriculum.py
-# SQLAlchemy Profesional
-# ==========================================
-
 from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from database.db import Base
 
-
-# ==========================================
-# NIVEL
-# ==========================================
 class Nivel(Base):
     __tablename__ = "niveles"
 
@@ -20,9 +12,6 @@ class Nivel(Base):
     grados = relationship("Grado", back_populates="nivel")
 
 
-# ==========================================
-# GRADO
-# ==========================================
 class Grado(Base):
     __tablename__ = "grados"
 
@@ -35,10 +24,6 @@ class Grado(Base):
     nivel = relationship("Nivel", back_populates="grados")
     temas = relationship("Tema", back_populates="grado")
 
-
-# ==========================================
-# AREA
-# ==========================================
 class Area(Base):
     __tablename__ = "areas"
 
@@ -50,9 +35,6 @@ class Area(Base):
     temas = relationship("Tema", back_populates="area")
 
 
-# ==========================================
-# COMPETENCIA
-# ==========================================
 class Competencia(Base):
     __tablename__ = "competencias"
 
@@ -64,10 +46,6 @@ class Competencia(Base):
     area = relationship("Area", back_populates="competencias")
     capacidades = relationship("Capacidad", back_populates="competencia")
 
-
-# ==========================================
-# CAPACIDAD
-# ==========================================
 class Capacidad(Base):
     __tablename__ = "capacidades"
 
@@ -78,10 +56,6 @@ class Capacidad(Base):
 
     competencia = relationship("Competencia", back_populates="capacidades")
 
-
-# ==========================================
-# TEMA
-# ==========================================
 class Tema(Base):
     __tablename__ = "temas"
 
@@ -97,9 +71,6 @@ class Tema(Base):
     desempenos = relationship("Desempeno", back_populates="tema")
 
 
-# ==========================================
-# DESEMPEÑO
-# ==========================================
 class Desempeno(Base):
     __tablename__ = "desempenos"
 

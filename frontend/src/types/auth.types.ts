@@ -26,3 +26,16 @@ export interface TokenResponse {
   access_token: string;
   token_type: string;
 }
+
+export interface PaginatedDocentesResponse {
+  total: number;
+  page: number;
+  limit: number;
+  data: Usuario[];
+}
+
+export interface UpdateDocenteData {
+  nombre: string;
+  apellido: string;
+  email: string;
+}

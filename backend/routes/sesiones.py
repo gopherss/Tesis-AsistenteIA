@@ -4,11 +4,13 @@ from sqlalchemy.orm import Session
 from database.db import get_db
 from models.sesion import Sesion
 from models.user import Usuario
-from schemas.sesion import SesionCreate, SesionResponse
+from models.metricas import MetricaCreacion
+from schemas.sesion import SesionCreate, SesionUpdate, SesionResponse
 from security.security import get_current_user
 from services.ia_service import generar_sesion_ia
 from services.validator_service import validar_sesion
 from services.pdf_service import generar_pdf_sesion
+import time
 
 router = APIRouter(
     prefix="/sesiones",
@@ -38,6 +40,8 @@ def crear_sesion(
         )
 
     datos.tema = resultado["tema_corregido"]
+
+    inicio_api = time.time()
     try:
         contenido_generado = generar_sesion_ia(datos)
     except Exception:
@@ -45,6 +49,7 @@ def crear_sesion(
             "No se pudo generar contenido con IA "
             "en este momento."
         )
+    tiempo_api = round(time.time() - inicio_api, 2)
 
     nueva_sesion = Sesion(
         titulo=datos.titulo,
@@ -64,6 +69,17 @@ def crear_sesion(
     db.add(nueva_sesion)
     db.commit()
     db.refresh(nueva_sesion)
+
+    if datos.tiempo_total_segundos:
+        metrica = MetricaCreacion(
+            usuario_id=current_user.id,
+            sesion_id=nueva_sesion.id,
+            tipo="con_plataforma",
+            tiempo_total_segundos=datos.tiempo_total_segundos,
+            tiempo_api_segundos=tiempo_api,
+        )
+        db.add(metrica)
+        db.commit()
 
     return nueva_sesion
 
@@ -111,6 +127,48 @@ def obtener_sesion(
         )
 
     return sesion
+
+@router.put(
+    "/{sesion_id}",
+    response_model=SesionResponse
+)
+def actualizar_sesion(
+    sesion_id: int,
+    datos: SesionUpdate,
+    db: Session = Depends(get_db),
+    current_user: Usuario = Depends(get_current_user)
+):
+    sesion = (
+        db.query(Sesion)
+        .filter(
+            Sesion.id == sesion_id,
+            Sesion.usuario_id == current_user.id
+        )
+        .first()
+    )
+
+    if not sesion:
+        raise HTTPException(
+            status_code=404,
+            detail="Sesión no encontrada"
+        )
+
+    sesion.titulo = datos.titulo
+    sesion.proposito = datos.proposito
+    sesion.grado = datos.grado
+    sesion.area = datos.area
+    sesion.tema = datos.tema
+    sesion.competencias = ",".join(datos.competencias)
+    sesion.capacidades = ",".join(datos.capacidades)
+    sesion.desempeno = ",".join(datos.desempeno)
+    sesion.numero_ejercicios = datos.numero_ejercicios
+    sesion.tiempo_sesion = datos.tiempo_sesion
+
+    db.commit()
+    db.refresh(sesion)
+
+    return sesion
+
 
 @router.delete(
     "/{sesion_id}",

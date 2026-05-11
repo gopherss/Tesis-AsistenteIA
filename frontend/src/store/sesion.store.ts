@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { sesionService } from "../services/sesion.service";
 import type {
   SesionCreate,
+  SesionUpdateData,
   SesionResponse,
 } from "../types/sesion.types";
 
@@ -15,6 +16,7 @@ interface SesionState {
 
   eliminarSesion: (id: number) => Promise<void>;
   regenerarSesionIA: (id: number) => Promise<void>;
+  actualizarSesion: (id: number, data: SesionUpdateData) => Promise<boolean>;
 }
 
 const useSesionStore =
@@ -83,6 +85,20 @@ const useSesionStore =
         toast.success("Sesión eliminada");
       } catch {
         toast.error("No se pudo eliminar");
+      }
+    },
+
+    actualizarSesion: async (id, data) => {
+      try {
+        const actualizada = await sesionService.actualizarSesion(id, data);
+        set((state) => ({
+          sesiones: state.sesiones.map((s) => (s.id === id ? actualizada : s)),
+        }));
+        toast.success("Sesión actualizada");
+        return true;
+      } catch (error: any) {
+        toast.error(error.response?.data?.detail || "Error al actualizar");
+        return false;
       }
     },
 

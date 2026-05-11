@@ -3,14 +3,6 @@ from sqlalchemy import Column, Integer, String, Boolean, ForeignKey, Text
 from sqlalchemy.orm import relationship
 from database.db import Base
 
-class Nivel(Base):
-    __tablename__ = "niveles"
-
-    id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(50), unique=True, nullable=False)
-
-    grados = relationship("Grado", back_populates="nivel")
-
 
 class Grado(Base):
     __tablename__ = "grados"
@@ -19,9 +11,6 @@ class Grado(Base):
     nombre = Column(String(50), nullable=False)
     orden = Column(Integer, nullable=False)
 
-    nivel_id = Column(Integer, ForeignKey("niveles.id"))
-
-    nivel = relationship("Nivel", back_populates="grados")
     temas = relationship("Tema", back_populates="grado")
 
 class Area(Base):

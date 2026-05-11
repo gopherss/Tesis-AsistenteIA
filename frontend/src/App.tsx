@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'sonner';
-import  { DirectorDashboard, DocenteDashboard, LoginForm, RegisterDocenteForm, Sesiones } from './pages';
+import  { DirectorDashboard, DocenteDashboard, LoginForm, RegisterDocenteForm, Sesiones, GestionCurricular } from './pages';
 import ProtectedRoute from './routes/ProtectedRoute';
 import { useAuthStore } from './store';
 
@@ -32,6 +32,14 @@ const App = () => {
           element={
             <ProtectedRoute allowedRoles={['DIRECTOR']}>
               <RegisterDocenteForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/gestion-curricular"
+          element={
+            <ProtectedRoute allowedRoles={['DIRECTOR']}>
+              <GestionCurricular />
             </ProtectedRoute>
           }
         />

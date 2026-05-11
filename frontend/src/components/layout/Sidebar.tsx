@@ -15,6 +15,7 @@ const Sidebar = () => {
   const directorMenu = [
     { name: "Panel", path: "/dashboard-director" },
     { name: "Docentes", path: "/registro-docente" },
+    { name: "Currículo", path: "/gestion-curricular" },
   ];
 
   const menu = user?.rol === "DIRECTOR" ? directorMenu : docenteMenu;

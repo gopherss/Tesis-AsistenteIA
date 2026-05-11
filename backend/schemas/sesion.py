@@ -1,5 +1,5 @@
 from pydantic import BaseModel, field_validator
-from typing import List
+from typing import List, Optional
 
 class SesionCreate(BaseModel):
     titulo: str
@@ -12,6 +12,20 @@ class SesionCreate(BaseModel):
     desempeno: List[str]
     numero_ejercicios: int
     tiempo_sesion: int
+    tiempo_total_segundos: Optional[float] = None
+
+class SesionUpdate(BaseModel):
+    titulo: str
+    proposito: str
+    grado: str
+    area: str
+    tema: str
+    competencias: List[str]
+    capacidades: List[str]
+    desempeno: List[str]
+    numero_ejercicios: int
+    tiempo_sesion: int
+
 
 class SesionResponse(BaseModel):
     id: int
@@ -25,6 +39,7 @@ class SesionResponse(BaseModel):
     desempeno: List[str]
     numero_ejercicios: int
     tiempo_sesion: int
+    contenido_ia: str = ""
     usuario_id: int
 
     @field_validator('competencias', 'capacidades', 'desempeno', mode='before')

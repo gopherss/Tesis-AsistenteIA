@@ -1,6 +1,7 @@
 import api from "../api/axiosConfig";
 import type {
   SesionCreate,
+  SesionUpdateData,
   SesionResponse,
 } from "../types/sesion.types";
 
@@ -19,6 +20,14 @@ export const sesionService = {
 
   eliminarSesion: async (id: number): Promise<void> => {
     await api.delete(`/sesiones/${id}`);
+  },
+
+  actualizarSesion: async (
+    id: number,
+    data: SesionUpdateData
+  ): Promise<SesionResponse> => {
+    const res = await api.put(`/sesiones/${id}`, data);
+    return res.data;
   },
 
   regenerarSesionIA: async (

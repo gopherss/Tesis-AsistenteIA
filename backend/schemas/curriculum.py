@@ -1,35 +1,24 @@
-# ==========================================
-# schemas/curriculum.py
-# Pydantic v2
-# ==========================================
 from pydantic import BaseModel, ConfigDict
 
 
-# ==========================================
-# NIVEL
-# ==========================================
-class NivelResponse(BaseModel):
-    id: int
-    nombre: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-# ==========================================
-# GRADO
-# ==========================================
 class GradoResponse(BaseModel):
     id: int
     nombre: str
     orden: int
-    nivel_id: int
 
     model_config = ConfigDict(from_attributes=True)
 
 
-# ==========================================
-# AREA
-# ==========================================
+class GradoCreate(BaseModel):
+    nombre: str
+    orden: int
+
+
+class GradoUpdate(BaseModel):
+    nombre: str
+    orden: int
+
+
 class AreaResponse(BaseModel):
     id: int
     nombre: str
@@ -38,9 +27,14 @@ class AreaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ==========================================
-# COMPETENCIA
-# ==========================================
+class AreaCreate(BaseModel):
+    nombre: str
+
+
+class AreaUpdate(BaseModel):
+    nombre: str
+
+
 class CompetenciaResponse(BaseModel):
     id: int
     nombre: str
@@ -49,9 +43,16 @@ class CompetenciaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ==========================================
-# CAPACIDAD
-# ==========================================
+class CompetenciaCreate(BaseModel):
+    nombre: str
+    area_id: int
+
+
+class CompetenciaUpdate(BaseModel):
+    nombre: str
+    area_id: int
+
+
 class CapacidadResponse(BaseModel):
     id: int
     nombre: str
@@ -60,9 +61,16 @@ class CapacidadResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ==========================================
-# TEMA
-# ==========================================
+class CapacidadCreate(BaseModel):
+    nombre: str
+    competencia_id: int
+
+
+class CapacidadUpdate(BaseModel):
+    nombre: str
+    competencia_id: int
+
+
 class TemaResponse(BaseModel):
     id: int
     nombre: str
@@ -73,9 +81,18 @@ class TemaResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ==========================================
-# DESEMPEÑO
-# ==========================================
+class TemaCreate(BaseModel):
+    nombre: str
+    area_id: int
+    grado_id: int
+
+
+class TemaUpdate(BaseModel):
+    nombre: str
+    area_id: int
+    grado_id: int
+
+
 class DesempenoResponse(BaseModel):
     id: int
     descripcion: str
@@ -84,3 +101,11 @@ class DesempenoResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class DesempenoCreate(BaseModel):
+    descripcion: str
+    tema_id: int
+
+
+class DesempenoUpdate(BaseModel):
+    descripcion: str
+    tema_id: int

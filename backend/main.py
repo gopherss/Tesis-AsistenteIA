@@ -5,11 +5,13 @@ from database.db import engine, Base
 from routes.auth import router as auth_router
 from routes.sesiones import router as sesiones_router
 from routes.curriculum import router as curriculum_router
+from routes.metricas import router as metricas_router
 
 # Importar modelos para que SQLAlchemy registre las tablas
 import models.user
 import models.sesion
 import models.curriculum
+import models.metricas
 
 load_dotenv()
 
@@ -31,3 +33,4 @@ app.add_middleware(
 app.include_router(auth_router)
 app.include_router(sesiones_router)
 app.include_router(curriculum_router)
+app.include_router(metricas_router)

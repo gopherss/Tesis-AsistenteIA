@@ -12,3 +12,4 @@ ollama==0.6.1
 python-dotenv==1.2.2
 psycopg2-binary==2.9.12
 reportlab==4.0.9
+openai==2.34.0

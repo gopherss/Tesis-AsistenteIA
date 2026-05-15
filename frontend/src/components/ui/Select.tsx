@@ -11,6 +11,7 @@ interface SelectProps
   label?: string;
   options: SelectOption[];
   placeholder?: string;
+  error?: string;
 }
 
 const Select = ({
@@ -18,6 +19,7 @@ const Select = ({
   options,
   placeholder = "Seleccione una opción",
   className = "",
+  error,
   ...rest
 }: SelectProps) => {
   return (
@@ -34,7 +36,6 @@ const Select = ({
           className={`
             w-full h-11
             px-4 pr-10
-            border border-gray-300
             rounded-lg
             bg-white
             text-gray-800
@@ -46,6 +47,10 @@ const Select = ({
             disabled:bg-gray-100
             disabled:text-gray-400
             disabled:cursor-not-allowed
+            ${error
+              ? "border-2 border-red-400"
+              : "border border-gray-300"
+            }
             ${className}
           `}
         >
@@ -66,6 +71,9 @@ const Select = ({
           className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
         />
       </div>
+      {error && (
+        <p className="text-red-500 text-xs mt-1">{error}</p>
+      )}
     </div>
   );
 };

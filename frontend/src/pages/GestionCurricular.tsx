@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, DashboardLayout, Input, Select } from "../components";
 import { curriculumService } from "../services/curriculum.service";
 import { toast } from "sonner";
+import { validarCampoVacio } from "../utils/validators";
 import type { Grado, Area, Competencia, Capacidad, Tema, Desempeno } from "../types/curriculum.types";
 
 type EntityType = "grados" | "areas" | "competencias" | "capacidades" | "temas" | "desempenos";
@@ -34,6 +35,7 @@ const GestionCurricular = () => {
   const [entityType, setEntityType] = useState<EntityType>("grados");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState({ ...initialForm });
+  const [errores, setErrores] = useState<Record<string, string>>({});
 
   // Lists
   const [grados, setGrados] = useState<Grado[]>([]);
@@ -91,15 +93,54 @@ const GestionCurricular = () => {
     }
   }, [entityType, filterTemaId]);
 
+  // ---- Validation ----
+
+  const validar = (): boolean => {
+    const errs: Record<string, string> = {};
+    if (entityType === "grados") {
+      const n = validarCampoVacio(form.nombre, "El nombre");
+      if (n) errs.nombre = n;
+    } else if (entityType === "areas") {
+      const n = validarCampoVacio(form.nombre, "El nombre");
+      if (n) errs.nombre = n;
+    } else if (entityType === "competencias") {
+      const a = validarCampoVacio(form.area_id, "El área");
+      if (a) errs.area_id = a;
+      const n = validarCampoVacio(form.nombre, "El nombre");
+      if (n) errs.nombre = n;
+    } else if (entityType === "capacidades") {
+      const c = validarCampoVacio(form.competencia_id, "La competencia");
+      if (c) errs.competencia_id = c;
+      const n = validarCampoVacio(form.nombre, "El nombre");
+      if (n) errs.nombre = n;
+    } else if (entityType === "temas") {
+      const a = validarCampoVacio(form.area_id, "El área");
+      if (a) errs.area_id = a;
+      const g = validarCampoVacio(form.grado_id, "El grado");
+      if (g) errs.grado_id = g;
+      const n = validarCampoVacio(form.nombre, "El nombre");
+      if (n) errs.nombre = n;
+    } else if (entityType === "desempenos") {
+      const t = validarCampoVacio(form.tema_id, "El tema");
+      if (t) errs.tema_id = t;
+      const d = validarCampoVacio(form.descripcion, "La descripción");
+      if (d) errs.descripcion = d;
+    }
+    setErrores(errs);
+    return Object.keys(errs).length === 0;
+  };
+
   // ---- Form handlers ----
 
   const resetForm = () => {
     setForm({ ...initialForm });
     setEditingId(null);
+    setErrores({});
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validar()) return;
     try {
       if (entityType === "grados") {
         if (editingId) {
@@ -168,6 +209,7 @@ const GestionCurricular = () => {
 
   const handleEdit = (item: any) => {
     setEditingId(item.id);
+    setErrores({});
     if (entityType === "grados") {
       setForm({ ...initialForm, nombre: item.nombre, orden: item.orden });
     } else if (entityType === "areas") {
@@ -215,42 +257,118 @@ const GestionCurricular = () => {
   const competenciasOptions: Option[] = competencias.map((c) => ({ value: c.id, label: c.nombre }));
   const temasOptions: Option[] = temas.map((t) => ({ value: t.id, label: t.nombre }));
 
+  const handleFormChange = (field: string, value: any) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setErrores((prev) => {
+      if (prev[field]) {
+        const copy = { ...prev };
+        delete copy[field];
+        return copy;
+      }
+      return prev;
+    });
+  };
+
   const renderForm = () => {
     return (
       <form onSubmit={handleSubmit} className="space-y-4">
         {entityType === "grados" && (
           <>
-            <Input label="Nombre del grado" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
-            <Input label="Orden" type="number" value={form.orden} onChange={(e) => setForm({ ...form, orden: Number(e.target.value) })} required />
+            <Input
+              label="Nombre del grado"
+              value={form.nombre}
+              onChange={(e) => handleFormChange("nombre", e.target.value)}
+              error={errores.nombre}
+            />
+            <Input
+              label="Orden"
+              type="number"
+              value={form.orden}
+              onChange={(e) => handleFormChange("orden", Number(e.target.value))}
+            />
           </>
         )}
 
         {entityType === "areas" && (
-          <Input label="Nombre del área" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+          <Input
+            label="Nombre del área"
+            value={form.nombre}
+            onChange={(e) => handleFormChange("nombre", e.target.value)}
+            error={errores.nombre}
+          />
         )}
 
         {entityType === "competencias" && (
           <>
-            <Select label="Área" value={form.area_id} onChange={(e) => setForm({ ...form, area_id: e.target.value })} options={areasOptions} placeholder="Seleccione área" />
-            <Input label="Nombre de la competencia" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+            <Select
+              label="Área"
+              value={form.area_id}
+              onChange={(e) => handleFormChange("area_id", e.target.value)}
+              options={areasOptions}
+              placeholder="Seleccione área"
+              error={errores.area_id}
+            />
+            <Input
+              label="Nombre de la competencia"
+              value={form.nombre}
+              onChange={(e) => handleFormChange("nombre", e.target.value)}
+              error={errores.nombre}
+            />
           </>
         )}
 
         {entityType === "capacidades" && (
           <>
-            <Select label="Área" value={filterAreaId} onChange={(e) => { setFilterAreaId(e.target.value); setFilterCompetenciaId(""); }} options={areasOptions} placeholder="Filtrar por área" />
-            <Select label="Competencia" value={form.competencia_id} onChange={(e) => setForm({ ...form, competencia_id: e.target.value })} options={competenciasOptions} placeholder="Seleccione competencia" />
-            <Input label="Nombre de la capacidad" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+            <Select
+              label="Área"
+              value={filterAreaId}
+              onChange={(e) => { setFilterAreaId(e.target.value); setFilterCompetenciaId(""); }}
+              options={areasOptions}
+              placeholder="Filtrar por área"
+            />
+            <Select
+              label="Competencia"
+              value={form.competencia_id}
+              onChange={(e) => handleFormChange("competencia_id", e.target.value)}
+              options={competenciasOptions}
+              placeholder="Seleccione competencia"
+              error={errores.competencia_id}
+            />
+            <Input
+              label="Nombre de la capacidad"
+              value={form.nombre}
+              onChange={(e) => handleFormChange("nombre", e.target.value)}
+              error={errores.nombre}
+            />
           </>
         )}
 
         {entityType === "temas" && (
           <>
             <div className="grid grid-cols-2 gap-3">
-              <Select label="Área" value={form.area_id} onChange={(e) => setForm({ ...form, area_id: e.target.value })} options={areasOptions} placeholder="Seleccione área" />
-              <Select label="Grado" value={form.grado_id} onChange={(e) => setForm({ ...form, grado_id: e.target.value })} options={gradosOptions} placeholder="Seleccione grado" />
+              <Select
+                label="Área"
+                value={form.area_id}
+                onChange={(e) => handleFormChange("area_id", e.target.value)}
+                options={areasOptions}
+                placeholder="Seleccione área"
+                error={errores.area_id}
+              />
+              <Select
+                label="Grado"
+                value={form.grado_id}
+                onChange={(e) => handleFormChange("grado_id", e.target.value)}
+                options={gradosOptions}
+                placeholder="Seleccione grado"
+                error={errores.grado_id}
+              />
             </div>
-            <Input label="Nombre del tema" value={form.nombre} onChange={(e) => setForm({ ...form, nombre: e.target.value })} required />
+            <Input
+              label="Nombre del tema"
+              value={form.nombre}
+              onChange={(e) => handleFormChange("nombre", e.target.value)}
+              error={errores.nombre}
+            />
           </>
         )}
 
@@ -260,8 +378,20 @@ const GestionCurricular = () => {
               <Select label="Área" value={filterAreaId} onChange={(e) => { setFilterAreaId(e.target.value); setFilterTemaId(""); }} options={areasOptions} placeholder="Filtrar por área" />
               <Select label="Grado" value={filterGradoId} onChange={(e) => { setFilterGradoId(e.target.value); setFilterTemaId(""); }} options={gradosOptions} placeholder="Filtrar por grado" />
             </div>
-            <Select label="Tema" value={form.tema_id} onChange={(e) => setForm({ ...form, tema_id: e.target.value })} options={temasOptions} placeholder="Seleccione tema" />
-            <Input label="Descripción del desempeño" value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} required />
+            <Select
+              label="Tema"
+              value={form.tema_id}
+              onChange={(e) => handleFormChange("tema_id", e.target.value)}
+              options={temasOptions}
+              placeholder="Seleccione tema"
+              error={errores.tema_id}
+            />
+            <Input
+              label="Descripción del desempeño"
+              value={form.descripcion}
+              onChange={(e) => handleFormChange("descripcion", e.target.value)}
+              error={errores.descripcion}
+            />
           </>
         )}
 

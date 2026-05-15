@@ -10,7 +10,7 @@ client = OpenAI(
 )
 
 
-def generar_sesion_ia(datos):
+def generar_sesion_ia(datos, usuario: str = "Desconocido"):
 
     prompt = f"""
 Actúa como un DOCENTE EXPERTO del Currículo Nacional del Perú (EBR PRIMARIA).
@@ -69,5 +69,33 @@ EVALUACIÓN
         ],
         temperature=0.3
     )
+
+    usage = response.usage
+    if usage:
+        print()
+        print("=" * 60)
+        print(f"  🤖  CONSUMO DE TOKENS — DeepSeek")
+        print("=" * 60)
+        print(f"  👤  Usuario        : {usuario}")
+        print(f"  🆔  ID respuesta   : {response.id}")
+        print(f"  📚  Modelo         : {response.model}")
+        print(f"  📦  Objeto         : {response.object}")
+        print(f"  ⏱️  Timestamp      : {response.created}")
+        print(f"  ⬆️   Prompt        : {usage.prompt_tokens:>6} tokens")
+        print(f"  ⬇️   Completion    : {usage.completion_tokens:>6} tokens")
+        print(f"  🔄  Total          : {usage.total_tokens:>6} tokens")
+        print(f"  🎯  Razón cierre   : {response.choices[0].finish_reason}")
+        print(f"  📍  Índice choice  : {response.choices[0].index}")
+        
+        # Estos campos dependen del proveedor y pueden no estar siempre disponibles
+        if hasattr(response, "system_fingerprint"):
+            print(f"  🖇️  Fingerprint    : {response.system_fingerprint}")
+        if hasattr(response, "latency"):
+            print(f"  ⏳  Latencia       : {response.latency} ms")
+        if hasattr(response, "estimated_cost"):
+            print(f"  💲  Costo estimado : {response.estimated_cost} USD")
+
+        print("-" * 60)
+        print()
 
     return response.choices[0].message.content

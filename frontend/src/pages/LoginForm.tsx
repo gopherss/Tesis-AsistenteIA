@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '../components';
 import { useAuthStore } from '../store';
+import { validarEmail, validarCampoVacio } from '../utils';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -12,10 +13,21 @@ const LoginForm = () => {
     password: '',
   });
 
+  const [errores, setErrores] = useState<{ email?: string; password?: string }>({});
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const errEmail = validarEmail(formData.email);
+    const errPass = validarCampoVacio(formData.password, 'La contraseña');
+    const errs: typeof errores = {};
+    if (errEmail) errs.email = errEmail;
+    if (errPass) errs.password = errPass;
+    setErrores(errs);
+
+    if (Object.keys(errs).length > 0) return;
+
     const success = await login(formData);
     if (success) {
       const user = useAuthStore.getState().user;
@@ -40,21 +52,25 @@ const LoginForm = () => {
           <Input
             label="Email"
             type="email"
-            required
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+              setErrores((prev) => ({ ...prev, email: validarEmail(e.target.value) || undefined }));
+            }}
             placeholder="correo@ejemplo.com"
+            error={errores.email}
           />
           <div className="relative">
             <Input
               label="Contraseña"
               type={showPassword ? 'text' : 'password'}
-              required
               value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, password: e.target.value });
+                setErrores((prev) => ({ ...prev, password: validarCampoVacio(e.target.value, 'La contraseña') || undefined }));
+              }}
               placeholder="••••••••••••••••"
+              error={errores.password}
             />
             <button
               type="button"

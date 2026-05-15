@@ -22,6 +22,16 @@ import type {
   UpdateDocenteData
 } from '../types/auth.types';
 
+import {
+  validarFormularioRegistro,
+  validarFormularioEdicion,
+  validarNombre,
+  validarEmail,
+  validarPassword,
+} from '../utils';
+
+import type { ErroresRegistro, ErroresEdicion } from '../utils';
+
 
 const RegisterDocenteForm = () => {
 
@@ -54,6 +64,9 @@ const RegisterDocenteForm = () => {
       email: ''
     });
 
+  const [errores, setErrores] = useState<ErroresRegistro>({});
+  const [editErrores, setEditErrores] = useState<ErroresEdicion>({});
+
   const [formData, setFormData] =
     useState<RegisterDocenteData>({
       email: '',
@@ -82,17 +95,18 @@ const RegisterDocenteForm = () => {
     loadDocentes();
   }, [page]);
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const validarYEnviar = async () => {
+    const errs = validarFormularioRegistro(formData);
+    setErrores(errs);
 
-    e.preventDefault();
+    if (Object.keys(errs).length > 0) {
+      toast.error(Object.values(errs)[0]);
+      return;
+    }
 
-    const success =
-      await registerDocente(formData);
+    const success = await registerDocente(formData);
 
     if (success) {
-
       setFormData({
         email: '',
         password: '',
@@ -100,9 +114,16 @@ const RegisterDocenteForm = () => {
         apellido: '',
         rol: 'DOCENTE'
       });
-
+      setErrores({});
       loadDocentes();
     }
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+    await validarYEnviar();
   };
 
   const openDeleteModal = (docente: Usuario) => {
@@ -145,12 +166,20 @@ const RegisterDocenteForm = () => {
       email: docente.email
     });
 
+    setEditErrores({});
     setEditModal(true);
   };
 
   const handleUpdate = async () => {
-
     if (!selectedDocente?.id) return;
+
+    const errs = validarFormularioEdicion(editData);
+    setEditErrores(errs);
+
+    if (Object.keys(errs).length > 0) {
+      toast.error(Object.values(errs)[0]);
+      return;
+    }
 
     try {
 
@@ -193,47 +222,43 @@ const RegisterDocenteForm = () => {
             <Input
               label="Nombre"
               value={formData.nombre}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  nombre: e.target.value
-                })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, nombre: e.target.value });
+                setErrores((prev) => ({ ...prev, nombre: validarNombre(e.target.value, "Nombre") || undefined }));
+              }}
+              error={errores.nombre}
             />
 
             <Input
               label="Apellido"
               value={formData.apellido}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  apellido: e.target.value
-                })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, apellido: e.target.value });
+                setErrores((prev) => ({ ...prev, apellido: validarNombre(e.target.value, "Apellido") || undefined }));
+              }}
+              error={errores.apellido}
             />
 
             <Input
               label="Email"
               type="email"
               value={formData.email}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  email: e.target.value
-                })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, email: e.target.value });
+                setErrores((prev) => ({ ...prev, email: validarEmail(e.target.value) || undefined }));
+              }}
+              error={errores.email}
             />
 
             <Input
               label="Contraseña"
               type="password"
               value={formData.password}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  password: e.target.value
-                })
-              }
+              onChange={(e) => {
+                setFormData({ ...formData, password: e.target.value });
+                setErrores((prev) => ({ ...prev, password: validarPassword(e.target.value) || undefined }));
+              }}
+              error={errores.password}
             />
 
             <Button
@@ -355,7 +380,7 @@ const RegisterDocenteForm = () => {
 
       </div>
 
-      {/* MODAL */}
+      {/* MODAL EDITAR */}
 
       {editModal && (
 
@@ -372,34 +397,31 @@ const RegisterDocenteForm = () => {
               <Input
                 label="Nombre"
                 value={editData.nombre}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    nombre: e.target.value
-                  })
-                }
+                onChange={(e) => {
+                  setEditData({ ...editData, nombre: e.target.value });
+                  setEditErrores((prev) => ({ ...prev, nombre: validarNombre(e.target.value, "Nombre") || undefined }));
+                }}
+                error={editErrores.nombre}
               />
 
               <Input
                 label="Apellido"
                 value={editData.apellido}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    apellido: e.target.value
-                  })
-                }
+                onChange={(e) => {
+                  setEditData({ ...editData, apellido: e.target.value });
+                  setEditErrores((prev) => ({ ...prev, apellido: validarNombre(e.target.value, "Apellido") || undefined }));
+                }}
+                error={editErrores.apellido}
               />
 
               <Input
                 label="Email"
                 value={editData.email}
-                onChange={(e) =>
-                  setEditData({
-                    ...editData,
-                    email: e.target.value
-                  })
-                }
+                onChange={(e) => {
+                  setEditData({ ...editData, email: e.target.value });
+                  setEditErrores((prev) => ({ ...prev, email: validarEmail(e.target.value) || undefined }));
+                }}
+                error={editErrores.email}
               />
 
               <div className="flex justify-end gap-3">
